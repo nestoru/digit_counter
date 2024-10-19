@@ -40,40 +40,6 @@ def count_digits(number: numbers.Number) -> int:
     return len(str(integer_part)) if integer_part != 0 else 1
 
 
-def parse_number(number_str: str) -> numbers.Number:
-    """
-    Parse the input string into an appropriate numeric type.
-
-    Parameters
-    ----------
-    number_str : str
-        The string representation of the number.
-
-    Returns
-    -------
-    numbers.Number
-        The parsed numeric value.
-
-    Raises
-    ------
-    ValueError
-        If the string cannot be parsed into a supported numeric type.
-    """
-    try:
-        if '.' in number_str or '/' in number_str:
-            try:
-                return float(number_str)
-            except ValueError:
-                try:
-                    return Fraction(number_str)
-                except ValueError:
-                    return Decimal(number_str)
-        else:
-            return int(number_str)
-    except Exception as e:
-        raise ValueError(f"Invalid number format. {e}") from e
-
-
 def main():
     """
     Command-line interface for the Digit Counter.
@@ -97,12 +63,26 @@ def main():
         ),
     )
     args = parser.parse_args()
+    number_str = args.number
     try:
-        number = parse_number(args.number)
+        if '.' in number_str or '/' in number_str:
+            try:
+                number = float(number_str)
+            except ValueError:
+                try:
+                    number = Fraction(number_str)
+                except ValueError:
+                    number = Decimal(number_str)
+        else:
+            number = int(number_str)
+    except Exception as e:
+        print(f"Error: Invalid number format. {e}")
+        sys.exit(1)
+    try:
         digit_count = count_digits(number)
         print(digit_count)
-    except (TypeError, ValueError) as e:
-        print(f"Error: {e}")
+    except TypeError as te:
+        print(f"Error: {te}")
         sys.exit(1)
 
 
